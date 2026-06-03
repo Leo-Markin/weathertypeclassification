@@ -8,8 +8,12 @@ from pickle import dump, load
 DATA_PATH = "weather_classification_data.csv"
 MODEL_PATH = "weather_model.mw"
 
-# Категориальные признаки и их возможные значения (для one-hot кодирования)
 CAT_COLS = ["Cloud Cover", "Season", "Location"]
+CAT_VALUES = {
+    "Cloud Cover": ["clear", "cloudy", "overcast", "partly cloudy"],
+    "Season": ["Autumn", "Spring", "Summer", "Winter"],
+    "Location": ["coastal", "inland", "mountain"],
+}
 NUM_COLS = ["Temperature", "Humidity", "Wind Speed", "Precipitation (%)",
             "Atmospheric Pressure", "UV Index", "Visibility (km)"]
 TARGET = "Weather Type"
@@ -38,6 +42,9 @@ def preprocess_data(df, test=True):
     else:
         X = df
 
+    X = X.copy()
+    for col in CAT_COLS:
+        X[col] = pd.Categorical(X[col], categories=CAT_VALUES[col])
     X = pd.get_dummies(X, columns=CAT_COLS, drop_first=True)
     X = X.astype(float)
 
